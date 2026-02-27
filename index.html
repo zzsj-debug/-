@@ -133,7 +133,7 @@
     <h2 class="text-2xl font-display font-bold mb-6 text-foreground">粉丝留言</h2>
     <div class="space-y-4">
       <textarea id="messageInput" class="w-full p-4 border border-border rounded-xl focus:ring-2 focus:ring-ring outline-none transition-all" placeholder="分享你的想法..."></textarea>
-      <button onclick="postMessage()" class="bg-accent hover:bg-accent-secondary text-white px-6 py-2 rounded-lg font-medium transition-all shadow-accent">
+      <button onclick="submitMyMessage()" class="bg-accent text-white px-6 py-2 rounded-lg ...">
         发布留言
       </button>
       <ul id="messageList" class="space-y-4 mt-8"></ul>
@@ -141,19 +141,37 @@
   </section>
 
   <script>
-    const supabase = supabase.createClient('https://avnsveaxilkuomznyike.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bnN2ZWF4aWxrdW9tem55aWtlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzM1ODAsImV4cCI6MjA4Nzc0OTU4MH0.Ckxj8jRrzt6ocFnCvwAAmO_oj-hw1Kl8QwUb1p_UWfw');
-
-    async function postMessage() {
+    // 1. 给你的客户端实例换个名字，避免冲突
+    const mySupabase = supabase.createClient('你的_SUPABASE_URL', '你的_SUPABASE_ANON_KEY');
+  
+    // 2. 将函数改名，避开浏览器内置的 postMessage
+    async function submitMyMessage() {
       const text = document.getElementById('messageInput').value;
-      if (!text) return;
-      const { error } = await supabase.from('messages').insert([{ content: text }]);
-      if (error) alert('失败'); else location.reload();
+      
+      if (!text.trim()) {
+        alert("内容不能为空");
+        return;
+      }
+      
+      // 使用新的 mySupabase 变量
+      const { error } = await mySupabase.from('messages').insert([{ content: text }]);
+      
+      if (error) {
+        console.error("提交失败:", error);
+        alert('失败: ' + error.message);
+      } else {
+        alert('留言成功！');
+        document.getElementById('messageInput').value = ''; // 清空输入框
+        location.reload(); // 刷新页面
+      }
     }
-
+  
+    // 读取留言保持不变，同样使用 mySupabase
     async function loadMessages() {
-      const { data } = await supabase.from('messages').select('*').order('created_at', { ascending: false });
+      const { data } = await mySupabase.from('messages').select('*').order('created_at', { ascending: false });
+      const list = document.getElementById('messageList');
       if (data) {
-        document.getElementById('messageList').innerHTML = data.map(m => `<li class="p-3 bg-white border rounded">${m.content}</li>`).join('');
+        list.innerHTML = data.map(m => `<li class="p-3 bg-white border border-border rounded-lg">${m.content}</li>`).join('');
       }
     }
     loadMessages();

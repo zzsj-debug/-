@@ -126,8 +126,40 @@
       overflow: hidden;
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+  <section class="max-w-2xl mx-auto py-12 px-4">
+    <h2 class="text-2xl font-display font-bold mb-6 text-foreground">粉丝留言</h2>
+    <div class="space-y-4">
+      <textarea id="messageInput" class="w-full p-4 border border-border rounded-xl focus:ring-2 focus:ring-ring outline-none transition-all" placeholder="分享你的想法..."></textarea>
+      <button onclick="postMessage()" class="bg-accent hover:bg-accent-secondary text-white px-6 py-2 rounded-lg font-medium transition-all shadow-accent">
+        发布留言
+      </button>
+      <ul id="messageList" class="space-y-4 mt-8"></ul>
+    </div>
+  </section>
+
+  <script>
+    const supabase = supabase.createClient('https://avnsveaxilkuomznyike.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bnN2ZWF4aWxrdW9tem55aWtlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzM1ODAsImV4cCI6MjA4Nzc0OTU4MH0.Ckxj8jRrzt6ocFnCvwAAmO_oj-hw1Kl8QwUb1p_UWfw');
+
+    async function postMessage() {
+      const text = document.getElementById('messageInput').value;
+      if (!text) return;
+      const { error } = await supabase.from('messages').insert([{ content: text }]);
+      if (error) alert('失败'); else location.reload();
+    }
+
+    async function loadMessages() {
+      const { data } = await supabase.from('messages').select('*').order('created_at', { ascending: false });
+      if (data) {
+        document.getElementById('messageList').innerHTML = data.map(m => `<li class="p-3 bg-white border rounded">${m.content}</li>`).join('');
+      }
+    }
+    loadMessages();
+  </script>
+</body>
+</html> 
   <!-- Navbar -->
   <nav class="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

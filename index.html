@@ -142,7 +142,7 @@
 
   <script>
     // 1. 给你的客户端实例换个名字，避免冲突
-    const mySupabase = supabase.createClient('你的_SUPABASE_URL', '你的_SUPABASE_ANON_KEY');
+    const mySupabase = supabase.createClient('https://avnsveaxilkuomznyike.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bnN2ZWF4aWxrdW9tem55aWtlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNzM1ODAsImV4cCI6MjA4Nzc0OTU4MH0.Ckxj8jRrzt6ocFnCvwAAmO_oj-hw1Kl8QwUb1p_UWfw');
   
     // 2. 将函数改名，避开浏览器内置的 postMessage
     async function submitMyMessage() {
